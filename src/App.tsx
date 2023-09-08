@@ -17,9 +17,15 @@ function App() {
     startService();
   }, []);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if(!ref.current) return;
-    
+
+    const result = await ref.current.transform(input, {
+      loader:'jsx',
+      target: 'es2015'
+    });
+
+    setCode(result.code);
   } 
 
   return (
