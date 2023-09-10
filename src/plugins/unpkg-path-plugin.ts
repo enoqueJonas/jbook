@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild-wasm';
+import axios from 'axios';
 
 export const unpkgPathPlugin = () => {
   return {
@@ -6,7 +7,13 @@ export const unpkgPathPlugin = () => {
     setup(build: esbuild.PluginBuild) {
       build.onResolve({ filter: /.*/ }, async (args: any) => {
         console.log('onResole', args);
-        return { path: args.path, namespace: 'a' };
+        if(args.path === 'index.js'){
+          return { path: args.path, namespace: 'a' };
+        }
+
+        if(args.path.includes('./' || '../')){
+          return {path: new URL(args.path, 'https://unpkg.com/' + args.resolveDir + '/'), namespace: 'a'}
+        }
       });
 
       build.onLoad({ filter: /.*/ }, async (args: any) => {
@@ -20,11 +27,14 @@ export const unpkgPathPlugin = () => {
               console.log(message);
             `,
           };
-        } else {
-          return {
-            loader: 'jsx',
-            contents: 'export default "hi there!"',
-          };
+        } 
+
+        const { data, request } = await axios.get(args.path);
+
+        return {
+          loader: 'jsx',
+          contents: data,
+          resolveDir: new URL('./', request.responseURL).pathname,
         }
       });
     },
