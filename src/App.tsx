@@ -5,7 +5,6 @@ import { fetchPlugin } from "./plugins/fetch-plugin";
 
 function App() {
   const [input, setInput] = useState('');
-  const [code, setCode] = useState('');
   const ref = useRef<any>();
   const iFrameRef = useRef<any>();
 
@@ -20,6 +19,25 @@ function App() {
     startService();
   }, []);
 
+  const html = 
+  `
+    <html>
+      <head></head>
+      <body>
+        <div id="root"></div>
+        <script>
+          window.addEventListener('message', (event) => {
+            try{
+              eval(event.data);
+            }catch(err){
+              document.querySelector('#root').innerHTML = '<div style="color: red; "> <h4>Runtime Error</h4>' + err + '</div>';
+            }
+          }, false)
+        </script>
+      </body>
+    </html>
+  `
+
   const handleClick = async () => {
     if(!ref.current) return;
 
@@ -33,25 +51,10 @@ function App() {
         global: 'window'
       }
     });
-
+    iFrameRef.current.srcdoc = html;
     // setCode(result.outputFiles[0].text);
     iFrameRef.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
   } 
-
-  const html = 
-  `
-    <html>
-      <head></head>
-      <body>
-        <div id="root"></div>
-        <script>
-          window.addEventListener('message', (event) => {
-            eval(event.data);
-          }, false)
-        </script>
-      </body>
-    </html>
-  `
 
   return (
     <div className="App">
@@ -59,8 +62,7 @@ function App() {
       <div>
         <button onClick={handleClick}>Submit</button>
       </div>
-      <pre>{code}</pre>
-      <iframe sandbox="allow-scripts" ref={iFrameRef} src="./test.html" srcDoc={html} />
+      <iframe title="preview" sandbox="allow-scripts" ref={iFrameRef} src="./test.html" srcDoc={html} />
     </div>
   );
 }
