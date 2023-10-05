@@ -31,7 +31,7 @@ useEffect(()=> {
   iFrameRef.current.contentWindow.postMessage(code, '*');
 }, [code])
 
-  return <iframe title="preview" sandbox="allow-scripts" ref={iFrameRef} src="./test.html" srcDoc={html} />
+  return <iframe style={{ backgroundColor: 'white' }} title="preview" sandbox="allow-scripts" ref={iFrameRef} src="./test.html" srcDoc={html} />
 }
 
 export default Preview;
