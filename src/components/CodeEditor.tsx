@@ -1,72 +1,79 @@
 import { useRef } from "react";
 import MonacoEditor from "@monaco-editor/react";
-import * as monaco from 'monaco-editor';
-import prettier from 'prettier/standalone';
-import parser from 'prettier/plugins/babel';
-import './CodeEditor.css';
+import * as monaco from "monaco-editor";
+import prettier from "prettier/standalone";
+import parser from "prettier/plugins/babel";
+import "./CodeEditor.css";
 
 interface CodeEditorProps {
   initialValue: string;
   handleChange(value: string): void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ handleChange, initialValue }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({
+  handleChange,
+  initialValue,
+}) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-  
-  const onEditorMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: typeof import('monaco-editor')) => {
+
+  const onEditorMount = (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    monaco: typeof import("monaco-editor")
+  ) => {
     // You can access the editor instance and Monaco instance here
     editor.onDidChangeModelContent(() => {
       handleChange(editor.getValue());
-    })
+    });
 
     editor.getModel()?.updateOptions({ tabSize: 2 });
     editorRef.current = editor;
-  }
+  };
 
   const onFormatClick = async () => {
-    const unformatted: string = editorRef.current?.getModel()?.getValue() ?? '';
-  
+    const unformatted: string = editorRef.current?.getModel()?.getValue() ?? "";
+
     try {
       const formatted = await prettier.format(unformatted, {
-        parser: 'babel',
+        parser: "babel",
         plugins: [parser], // Include the Babel plugin
         useTabs: false,
         semi: true,
         singleQuote: true,
       });
-  
-      editorRef.current?.setValue(formatted.replace(/\n$/, ''));
+
+      editorRef.current?.setValue(formatted.replace(/\n$/, ""));
     } catch (error) {
       console.error("Error formatting code:", error);
     }
   };
-  
 
   return (
     <div className="editor-wrapper">
-      <button 
+      <button
         className="button button-format is-primary is-small"
-        onClick={onFormatClick} 
-      > Format </button>
+        onClick={onFormatClick}
+      >
+        {" "}
+        Format{" "}
+      </button>
       <MonacoEditor
-      onMount={onEditorMount}
-      value={initialValue}
-      options={{
-        wordWrap: 'on',
-        minimap: { enabled: false },
-        showUnused: false,
-        lineNumbersMinChars: 3,
-        folding: false,
-        fontSize: 16,
-        scrollBeyondLastLine: false,
-      }}
-      theme="vs-dark"
-      language="javascript"
-      height="100%"
-    />
+        onMount={onEditorMount}
+        value={initialValue}
+        options={{
+          wordWrap: "on",
+          minimap: { enabled: false },
+          showUnused: false,
+          lineNumbersMinChars: 3,
+          folding: false,
+          fontSize: 16,
+          scrollBeyondLastLine: false,
+        }}
+        theme="vs-dark"
+        language="javascript"
+        height="100%"
+      />
     </div>
   );
-}
-
+};
 
 export default CodeEditor;
