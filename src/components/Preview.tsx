@@ -28,7 +28,9 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
 
   useEffect(() => {
     iFrameRef.current.srcdoc = html;
-    iFrameRef.current.contentWindow.postMessage(code, "*");
+    setTimeout(() => {
+      iFrameRef.current.contentWindow.postMessage(code, "*");
+    }, 50);
   }, [code]);
 
   return (
