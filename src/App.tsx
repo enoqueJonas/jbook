@@ -1,9 +1,9 @@
-import CodeCell from "./components/CodeCell";
+import TextEditor from "./components/TextEditor";
 
 function App() {
   return (
     <div className="App">
-      <CodeCell />
+      <TextEditor />
     </div>
   );
 }
