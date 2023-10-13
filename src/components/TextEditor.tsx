@@ -1,19 +1,21 @@
+import "./TextEditor.css";
+import { useState, useEffect, useRef } from "react";
 import MDEditor from "@uiw/react-md-editor";
-import { useEffect, useRef, useState } from "react";
 
 const TextEditor: React.FC = () => {
-  const [editing, setEditing] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     const listener = (event: MouseEvent) => {
       if (
-        event.target &&
         ref.current &&
+        event.target &&
         ref.current.contains(event.target as Node)
       ) {
         return;
       }
+
       setEditing(false);
     };
     document.addEventListener("click", listener, { capture: true });
@@ -22,10 +24,6 @@ const TextEditor: React.FC = () => {
       document.removeEventListener("click", listener, { capture: true });
     };
   }, []);
-
-  const handleClick = () => {
-    setEditing(true);
-  };
 
   if (editing) {
     return (
@@ -36,8 +34,8 @@ const TextEditor: React.FC = () => {
   }
 
   return (
-    <div onClick={handleClick}>
-      <MDEditor.Markdown source="# Header" />
+    <div onClick={() => setEditing(true)}>
+      <MDEditor.Markdown source={"# Header"} />
     </div>
   );
 };
